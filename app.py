@@ -1,15 +1,24 @@
 import cx_Oracle
 from sshtunnel import SSHTunnelForwarder
+import configparser
 
-# SSH server details
-ssh_host = "moon.cs.ryerson.ca"
+# Initialize the configparser
+config = configparser.ConfigParser()
+
+# Read the config file
+config.read('config.ini')
+
+# Access values from the config file
+db_host = config['database']['host']
+db_port = config['database']['port']
+db_user = config['database']['user']
+db_password = config['database']['password']
+db_sid = config['database']['sid']
+
+ssh_host = config['ssh']['hostname']
 ssh_port = 22
-ssh_username = "asher"
-ssh_password = "jEEET9S*3Sj@rAU"
-
-# Oracle DB credentials
-oracle_username = "asher"
-oracle_password = "07101750"
+ssh_username = config['ssh']['username']
+ssh_password = config['ssh']['password']
 
 # Oracle DSN based on the provided connection details
 oracle_dsn = (
@@ -29,7 +38,7 @@ try:
     ) as tunnel:
         
         # Establish the Oracle database connection using cx_Oracle
-        connection = cx_Oracle.connect(oracle_username, oracle_password, oracle_dsn)
+        connection = cx_Oracle.connect(db_user, db_password, oracle_dsn)
         print("Database connection successful")
 
         # Example query
