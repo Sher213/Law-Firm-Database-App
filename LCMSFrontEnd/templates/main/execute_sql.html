@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Execute SQL{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>Execute SQL Query</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">Run Query</button>
+        </form>
+
+        {% if result %}
+            <h3 class="mt-4">Result:</h3>
+            <pre>{{ result }}</pre>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
