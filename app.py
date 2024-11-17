@@ -1,6 +1,7 @@
 import cx_Oracle
 from sshtunnel import SSHTunnelForwarder
 import configparser
+from tabulate import tabulate
 
 # Initialize the configparser
 config = configparser.ConfigParser()
@@ -9,11 +10,8 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 # Access values from the config file
-db_host = config['database']['host']
-db_port = config['database']['port']
 db_user = config['database']['user']
 db_password = config['database']['password']
-db_sid = config['database']['sid']
 
 ssh_host = config['ssh']['hostname']
 ssh_port = 22
@@ -27,7 +25,34 @@ oracle_dsn = (
     "(CONNECT_DATA=(SID=orcl12c)))"
 )
 
-# Set up the SSH tunnel
+# Function to execute SQL statements
+def execute_sql(cursor, query):
+    try:
+        # Determine the type of query
+        query_type = query.strip().split()[0].upper()
+
+        if query_type == "SELECT":
+            cursor.execute(query)
+            # Fetch column names and rows
+            column_names = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+
+            # Print results in tabular format
+            if rows:
+                print(tabulate(rows, headers=column_names, tablefmt="grid"))
+            else:
+                print("No data found.")
+        else:
+            # For non-SELECT queries, execute and commit changes
+            cursor.execute(query)
+            cursor.connection.commit()
+            print(f"Query executed successfully: {query_type}")
+    except cx_Oracle.DatabaseError as e:
+        print(f"Database error occurred: {e}")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
+# Main code block
 try:
     with SSHTunnelForwarder(
         (ssh_host, ssh_port),
@@ -36,21 +61,23 @@ try:
         remote_bind_address=("oracle12c.scs.ryerson.ca", 1521),
         local_bind_address=("localhost", 1521)
     ) as tunnel:
-        
+
         # Establish the Oracle database connection using cx_Oracle
         connection = cx_Oracle.connect(db_user, db_password, oracle_dsn)
         print("Database connection successful")
 
-        # Example query
         cursor = connection.cursor()
-        cursor.execute("SELECT table_name FROM user_tables")
-        rows = cursor.fetchall()
 
-        if rows:
-            for row in rows:
-                print(row)
-        else:
-            print("No data found")
+        while True:
+            print("\nEnter an SQL statement (or type 'exit' to quit):")
+            user_input = input("SQL> ").strip()
+
+            if user_input.lower() == "exit":
+                print("Exiting the program.")
+                break
+
+            # Execute the SQL statement
+            execute_sql(cursor, user_input)
 
         # Close resources
         cursor.close()
