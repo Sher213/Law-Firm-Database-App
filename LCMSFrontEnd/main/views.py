@@ -5,11 +5,9 @@ from django.db import connection
 from .forms import SQLInputForm
 
 def home(request):
-    """Home page view."""
     return render(request, 'main/home.html')
 
 def signup(request):
-    """Signup page view."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -21,7 +19,6 @@ def signup(request):
     return render(request, 'main/signup.html', {'form': form})
 
 def execute_sql(request):
-    """SQL query execution view."""
     result = None
     if request.method == 'POST':
         form = SQLInputForm(request.POST)
@@ -36,4 +33,7 @@ def execute_sql(request):
     else:
         form = SQLInputForm()
     return render(request, 'main/execute_sql.html', {'form': form, 'result': result})
+
+def contact(request):
+    return render(request, 'main/contact.html')
 

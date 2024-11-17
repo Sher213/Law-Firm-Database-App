@@ -8,4 +8,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),           # Signup page
     path('execute_sql/', views.execute_sql, name='execute_sql'),  # SQL query page
+    path('contact/', views.contact, name='contact'),       # Contact page
+
 ]
