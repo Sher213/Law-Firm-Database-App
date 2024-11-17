@@ -1,1 +1,17 @@
 config.ini
+*.pyc
+*.pyo
+__pycache__/
+venv/
+.env/
+*.venv
+db.sqlite3
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
