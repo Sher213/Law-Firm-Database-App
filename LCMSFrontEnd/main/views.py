@@ -72,20 +72,21 @@ def execute_sql(request):
 
 def drop_tables():
     sql_queries = [
-        "DROP TABLE IF EXISTS CaseFile",
-        "DROP TABLE IF EXISTS Lawyer",
-        "DROP TABLE IF EXISTS Records",
-        "DROP TABLE IF EXISTS CaseDocument",
-        "DROP TABLE IF EXISTS HistoricalLegalRecords",
-        "DROP TABLE IF EXISTS ExternalPersons",
-        "DROP TABLE IF EXISTS ClientLegalProfile",
-        "DROP TABLE IF EXISTS Invoice",
-        "DROP TABLE IF EXISTS ClientPersonalProfile",
-        "DROP TABLE IF EXISTS ImportantDates",
-        "DROP TABLE IF EXISTS Task",
+        "DROP TABLE CaseFile CASCADE CONSTRAINTS",
+        "DROP TABLE Lawyer CASCADE CONSTRAINTS",
+        "DROP TABLE Records CASCADE CONSTRAINTS",
+        "DROP TABLE CaseDocument CASCADE CONSTRAINTS",
+        "DROP TABLE HistoricalLegalRecords CASCADE CONSTRAINTS",
+        "DROP TABLE ExternalPersons CASCADE CONSTRAINTS",
+        "DROP TABLE ClientLegalProfile CASCADE CONSTRAINTS",
+        "DROP TABLE Invoice CASCADE CONSTRAINTS",
+        "DROP TABLE ClientPersonalProfile CASCADE CONSTRAINTS",
+        "DROP TABLE ImportantDates CASCADE CONSTRAINTS",
+        "DROP TABLE Task CASCADE CONSTRAINTS",
     ]
     for query in sql_queries:
         db_module.execute_sql(query)
+        
 
 def create_tables():
     sql_queries = [
