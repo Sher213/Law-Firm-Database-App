@@ -1,20 +1,29 @@
 {% extends 'main/base.html' %}
 
-{% block title %}Execute SQL{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <h2>Execute SQL Query</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-primary" type="submit">Run Query</button>
-        </form>
+{% block title %}SQL Operations{% endblock %}
 
-        {% if result %}
-            <h3 class="mt-4">Result:</h3>
-            <pre>{{ result }}</pre>
-        {% endif %}
-    </div>
+{% block content %}
+<div class="container">
+    <h2>SQL Operations</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea class="form-control" id="sql_query" name="sql_query" rows="5" placeholder="Write your SQL query here..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Run Query</button>
+    </form>
+
+    {% if result %}
+        <h3 class="mt-4">Result:</h3>
+        <pre>{{ result }}</pre>
+    {% endif %}
+
+    <h3 class="mt-4">Available Operations</h3>
+    <p><strong>Read:</strong> SELECT queries to fetch data.</p>
+    <p><strong>Insert:</strong> INSERT queries to add new data.</p>
+    <p><strong>Update:</strong> UPDATE queries to modify existing data.</p>
+    <p><strong>Delete:</strong> DELETE queries to remove data.</p>
+    <p><strong>Search:</strong> Use WHERE clauses to filter results.</p>
 </div>
 {% endblock %}
+

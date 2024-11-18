@@ -1,15 +1,22 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.db import connection
 from .forms import SQLInputForm
 
+class CustomLogoutView(LogoutView):
+    http_method_names = ['get', 'post']
+    template_name = 'main/logout.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        logout(request)
+        return super().dispatch(request, *args, **kwargs)
+
 def home(request):
-    """Home page view."""
     return render(request, 'main/home.html')
 
 def signup(request):
-    """Signup page view."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -21,7 +28,6 @@ def signup(request):
     return render(request, 'main/signup.html', {'form': form})
 
 def execute_sql(request):
-    """SQL query execution view."""
     result = None
     if request.method == 'POST':
         form = SQLInputForm(request.POST)
@@ -36,4 +42,7 @@ def execute_sql(request):
     else:
         form = SQLInputForm()
     return render(request, 'main/execute_sql.html', {'form': form, 'result': result})
+
+def contact(request):
+    return render(request, 'main/contact.html')
 

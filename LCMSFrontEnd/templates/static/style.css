@@ -1,0 +1,30 @@
+body {
+    background: linear-gradient(to right, #008080 50%, #f8f9fa 50%);
+    color: #333;
+}
+
+.navbar {
+    background-color: #008080;
+}
+
+.navbar-brand, .nav-link {
+    color: #000000 !important;
+}
+
+.description {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    text-align: center;
+}
+
+.container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contact-title {
+    margin-bottom: 1rem;
+    height: 80px;
+}
