@@ -10,7 +10,10 @@
         <div class="form-group">
             <textarea class="form-control" id="sql_query" name="sql_query" rows="5" placeholder="Write your SQL query here..."></textarea>
         </div>
-        <button type="submit" class="btn btn-primary mt-2">Run Query</button>
+        <button type="submit" class="btn btn-primary mt-2" name="action" value="run_query">Run Query</button>
+        <button type="submit" class="btn btn-danger mt-2" name="action" value="drop_tables">Drop Tables</button>
+        <button type="submit" class="btn btn-success mt-2" name="action" value="create_tables">Create Tables</button>
+        <button type="submit" class="btn btn-info mt-2" name="action" value="populate_tables">Populate Tables</button>
     </form>
 
     {% if result %}
@@ -26,4 +29,3 @@
     <p><strong>Search:</strong> Use WHERE clauses to filter results.</p>
 </div>
 {% endblock %}
-
