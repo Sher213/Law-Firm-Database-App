@@ -4,6 +4,8 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.db import connection
 from .forms import SQLInputForm
+import traceback
+from . import db_module
 
 class CustomLogoutView(LogoutView):
     http_method_names = ['get', 'post']
@@ -34,11 +36,10 @@ def execute_sql(request):
         if form.is_valid():
             sql_query = form.cleaned_data['sql_query']
             try:
-                with connection.cursor() as cursor:
-                    cursor.execute(sql_query)
-                    result = cursor.fetchall() if cursor.description else "Query executed successfully."
+                result = db_module.execute_sql(sql_query)
             except Exception as e:
                 result = f"Error: {str(e)}"
+                traceback.print_exc()
     else:
         form = SQLInputForm()
     return render(request, 'main/execute_sql.html', {'form': form, 'result': result})
