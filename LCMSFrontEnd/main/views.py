@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.db import connection
@@ -7,6 +7,11 @@ from .forms import SQLInputForm
 
 class CustomLogoutView(LogoutView):
     http_method_names = ['get', 'post']
+    template_name = 'main/logout.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        logout(request)
+        return super().dispatch(request, *args, **kwargs)
 
 def home(request):
     return render(request, 'main/home.html')
