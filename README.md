@@ -11,6 +11,6 @@ The system can also grow with a law firm's needs, making it easy to manage large
 With LCMS, users can create and access accounts to personalize their experience. The system supports direct SQL query execution to interact with the database for analysis and data management. 
 Users can retrieve, update, and delete records related to legal cases, clients, and invoices. Additionally, LCMS includes a dedicated contact page for support and assistance.
 
-# Created By: 
+## Created By: 
 * Mohammed Sohaib Syed
 * Ali Sher
