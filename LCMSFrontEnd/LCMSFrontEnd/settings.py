@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-vrcgn1qskhsl7lr)2jbne%9c)3k&8kw)2wn+#)9adzlrx^cfta
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['law-firm-database-app-1.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
