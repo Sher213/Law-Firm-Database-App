@@ -16,13 +16,64 @@
         <button type="submit" class="btn btn-info mt-2" name="action" value="populate_tables">Populate Tables</button>
         <button type="submit" class="btn btn-warning mt-2" name="action" value="disconnect_oracle">Disconnect</button>
     </form>
-    
 
     {% if result %}
         <h3 class="mt-4">Result:</h3>
         <div style="overflow: auto;">{{ result|safe }}</div>
     {% endif %}
 
+    <hr>
+    <h3>Add Record</h3>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="table_name" class="form-control mb-2" placeholder="Table Name" required>
+        <textarea name="record_data" class="form-control mb-2" placeholder="Record Data (JSON format)" required></textarea>
+        <button type="submit" class="btn btn-success">Add Record</button>
+    </form>
+
+    <hr>
+    <h3>Delete Record</h3>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="table_name" class="form-control mb-2" placeholder="Table Name" required>
+        <input type="text" name="condition" class="form-control mb-2" placeholder="Condition (e.g., id=1)" required>
+        <button type="submit" class="btn btn-danger">Delete Record</button>
+    </form>
+
+    <hr>
+    <h3>Search Record</h3>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="table_name" class="form-control mb-2" placeholder="Table Name" required>
+        <input type="text" name="condition" class="form-control mb-2" placeholder="Condition (e.g., name='John')" required>
+        <button type="submit" class="btn btn-info">Search Record</button>
+    </form>
+
+    {% if search_results %}
+        <h3 class="mt-4">Search Results:</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    {% for column in search_results.columns %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in search_results.rows %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif search_error %}
+        <div class="alert alert-warning mt-4">{{ search_error }}</div>
+    {% endif %}
+
+    <hr>
     <h3 class="mt-4">Available Operations</h3>
     <p><strong>Read:</strong> SELECT queries to fetch data.</p>
     <p><strong>Insert:</strong> INSERT queries to add new data.</p>
