@@ -46,21 +46,11 @@ def connect_to_database(config):
     connection = cx_Oracle.connect(db_user, db_password, oracle_dsn)
     return connection
 
+"""
+Execute an SQL query using the provided cursor.
+"""
 
-def execute_sql(query):
-    """
-    Execute an SQL query using the provided cursor.
-    """
-
-    config = load_config()
-
-    with create_ssh_tunnel(config) as tunnel:
-        print("SSH Tunnel established")
-
-        connection = connect_to_database(config)
-        print("Database connection successful")
-
-        cursor = connection.cursor()
+def execute_sql(query, cursor):
         try:
             query_type = query.strip().split()[0].upper()
 
@@ -84,10 +74,6 @@ def execute_sql(query):
             print(f"Database error occurred: {e}")
         except Exception as e:
             print(f"Error occurred: {e}")
-
-        cursor.close()
-        connection.close()
-
 
 def main():
     """
