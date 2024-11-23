@@ -8,18 +8,19 @@
     <form method="post">
         {% csrf_token %}
         <div class="form-group">
-            <textarea class="form-control" id="sql_query" name="sql_query" rows="5" placeholder="Write your SQL query here..."></textarea>
+            <textarea class="form-control" id="sql_query" name="sql_query" rows="5" placeholder="Write your SQL query here...">{{form.input}}</textarea>
         </div>
         <button type="submit" class="btn btn-primary mt-2" name="action" value="run_query">Run Query</button>
         <button type="submit" class="btn btn-danger mt-2" name="action" value="drop_tables">Drop Tables</button>
         <button type="submit" class="btn btn-success mt-2" name="action" value="create_tables">Create Tables</button>
         <button type="submit" class="btn btn-info mt-2" name="action" value="populate_tables">Populate Tables</button>
+        <button type="submit" class="btn btn-warning mt-2" name="action" value="disconnect_oracle">Disconnect</button>
     </form>
     
 
     {% if result %}
         <h3 class="mt-4">Result:</h3>
-        <pre>{{ result }}</pre>
+        <div style="overflow: auto;">{{ result|safe }}</div>
     {% endif %}
 
     <h3 class="mt-4">Available Operations</h3>

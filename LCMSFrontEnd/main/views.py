@@ -5,7 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import connection
 from .forms import SQLInputForm
 import traceback
-from . import db_module
+from django.utils.html import format_html
+
+from .db_module import DBModule
 
 class CustomLogoutView(LogoutView):
     http_method_names = ['get', 'post']
@@ -229,7 +231,91 @@ create_tables_queries = [
         """,
     ]
 
-def execute_sql(request):
+# Global variable to store the DBModule instance
+db = None
+
+def execute_sql_view(request):
+    """
+    Handle SQL query execution and rendering the result in the HTML template.
+    """
+    global db
+    form = SQLInputForm()
+    result = None
+    error = None
+
+    # Establish the connection and SSH tunnel only if not already established
+    if db is None:
+        try:
+            db = DBModule("config.ini")
+            db.create_ssh_tunnel()
+            db.connect_to_database()
+            print("Connection Established!")
+        except Exception as e:
+            error = f"Error establishing database connection: {e}"
+            return render(request, 'main/execute_sql.html', {'form': form, 'result': result, 'error': error})
+
+    if request.method == 'POST':
+        form = SQLInputForm(request.POST)
+        action = request.POST.get('action', '')
+        if action == 'disconnect_oracle':
+            try:
+                close_db_connection()
+                result = "Disconnected from the database."
+            except Exception as e:
+                error = f"Error disconnecting from DB: {str(e)}"
+        elif form.is_valid():
+            query = form.cleaned_data['sql_query']
+            try:
+                if action == 'drop_tables':
+                    for query in drop_tables_queries:
+                        result, _ = db.execute_sql(query)
+                    result = "Tables dropped successfully."
+
+                elif action == 'create_tables':
+                    for query in create_tables_queries:
+                        result, _ = db.execute_sql(query)
+                    result = "Tables created successfully."
+
+                elif action == 'populate_tables':
+                    for query in pop_tables_queries:
+                        result, _ = db.execute_sql(query)
+                    result = "Tables populated successfully."
+                else:
+                    # Regular SQL query execution
+                    result, columns = db.execute_sql(query)
+                    if isinstance(result, list) and columns:
+                         # Convert result into an HTML table
+                        table = f'''
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    {"".join(f"<th>{col}</th>" for col in columns)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {"".join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in result)}
+                            </tbody>
+                        </table>
+                        '''                        
+                        table = format_html(table)
+                        result = table
+            except Exception as e:
+                error = f"Error: {str(e)}"
+                traceback.print_exc()
+
+    return render(request, 'main/execute_sql.html', {'form': form, 'result': result, 'error': error})
+
+def close_db_connection():
+    """
+    Close the database connection and SSH tunnel (if open).
+    """
+    global db
+    if db:
+        db.close()
+        db = None
+
+
+'''def execute_sql(request):
     # Create a fresh form and set the result to None
     form = SQLInputForm()
     result = None
@@ -293,4 +379,4 @@ def execute_sql(request):
             traceback.print_exc()
 
     # If valid input (no errors), return the form with the valid query in it
-    return render(request, 'main/execute_sql.html', {'form': form, 'result': result})
+    return render(request, 'main/execute_sql.html', {'form': form, 'result': result})'''
