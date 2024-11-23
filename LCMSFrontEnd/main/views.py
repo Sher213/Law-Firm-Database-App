@@ -257,12 +257,14 @@ def execute_sql_view(request):
     if request.method == 'POST':
         form = SQLInputForm(request.POST)
         action = request.POST.get('action', '')
+
         if action == 'disconnect_oracle':
             try:
                 close_db_connection()
                 result = "Disconnected from the database."
             except Exception as e:
                 error = f"Error disconnecting from DB: {str(e)}"
+
         elif form.is_valid():
             query = form.cleaned_data['sql_query']
             try:
@@ -280,11 +282,61 @@ def execute_sql_view(request):
                     for query in pop_tables_queries:
                         result, _ = db.execute_sql(query)
                     result = "Tables populated successfully."
+
+                elif action == 'add_record':
+                    table_name = request.POST.get('table_name')
+                    record_data = request.POST.get('record_data')
+                    try:
+                        record_dict = eval(record_data)
+                        columns = ', '.join(record_dict.keys())
+                        values = ', '.join([f"'{value}'" for value in record_dict.values()])
+                        add_query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+                        db.execute_sql(add_query)
+                        result = f"Record added successfully to table '{table_name}'."
+                    except Exception as e:
+                        error = f"Error adding record: {str(e)}"
+
+                elif action == 'delete_record':
+                    table_name = request.POST.get('table_name')
+                    condition = request.POST.get('condition')
+                    try:
+                        delete_query = f"DELETE FROM {table_name} WHERE {condition}"
+                        db.execute_sql(delete_query)
+                        result = f"Record(s) deleted successfully from table '{table_name}'."
+                    except Exception as e:
+                        error = f"Error deleting record: {str(e)}"
+
+                elif action == 'search_record':
+                    table_name = request.POST.get('table_name')
+                    condition = request.POST.get('condition')
+                    try:
+                        search_query = f"SELECT * FROM {table_name} WHERE {condition}"
+                        search_result, columns = db.execute_sql(search_query)
+                        if search_result:
+                            # Convert search results into an HTML table
+                            table = f'''
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        {"".join(f"<th>{col}</th>" for col in columns)}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {"".join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in search_result)}
+                                </tbody>
+                            </table>
+                            '''
+                            result = format_html(table)
+                        else:
+                            result = "No matching records found."
+                    except Exception as e:
+                        error = f"Error searching for record: {str(e)}"
+
                 else:
                     # Regular SQL query execution
                     result, columns = db.execute_sql(query)
                     if isinstance(result, list) and columns:
-                         # Convert result into an HTML table
+                        # Convert result into an HTML table
                         table = f'''
                         <table class="table table-bordered">
                             <thead>
@@ -296,14 +348,14 @@ def execute_sql_view(request):
                                 {"".join(f"<tr>{''.join(f'<td>{cell}</td>' for cell in row)}</tr>" for row in result)}
                             </tbody>
                         </table>
-                        '''                        
-                        table = format_html(table)
-                        result = table
+                        '''
+                        result = format_html(table)
             except Exception as e:
                 error = f"Error: {str(e)}"
                 traceback.print_exc()
 
     return render(request, 'main/execute_sql.html', {'form': form, 'result': result, 'error': error})
+
 
 def close_db_connection():
     """
