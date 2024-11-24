@@ -264,26 +264,22 @@ def execute_sql_view(request):
                 result = "Disconnected from the database."
             except Exception as e:
                 error = f"Error disconnecting from DB: {str(e)}"
-
+        if action == 'drop_tables':
+            for query in drop_tables_queries:
+                result, _ = db.execute_sql(query)
+            result = "Tables dropped successfully."
+        elif action == 'create_tables':
+            for query in create_tables_queries:
+                result, _ = db.execute_sql(query)
+            result = "Tables created successfully."
+        elif action == 'populate_tables':
+            for query in pop_tables_queries:
+                result, _ = db.execute_sql(query)
+            result = "Tables populated successfully."
         elif form.is_valid():
             query = form.cleaned_data['sql_query']
             try:
-                if action == 'drop_tables':
-                    for query in drop_tables_queries:
-                        result, _ = db.execute_sql(query)
-                    result = "Tables dropped successfully."
-
-                elif action == 'create_tables':
-                    for query in create_tables_queries:
-                        result, _ = db.execute_sql(query)
-                    result = "Tables created successfully."
-
-                elif action == 'populate_tables':
-                    for query in pop_tables_queries:
-                        result, _ = db.execute_sql(query)
-                    result = "Tables populated successfully."
-
-                elif action == 'add_record':
+                if action == 'add_record':
                     table_name = request.POST.get('table_name')
                     record_data = request.POST.get('record_data')
                     try:
